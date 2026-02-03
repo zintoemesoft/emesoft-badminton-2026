@@ -3,12 +3,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAI61KtOiqw3z43dcECQQUvGb3CZNJkeos",
-  authDomain: "emesoft-badminton-2026.firebaseapp.com",
-  projectId: "emesoft-badminton-2026",
-  storageBucket: "emesoft-badminton-2026.firebasestorage.app",
-  messagingSenderId: "976219002466",
-  appId: "1:976219002466:web:181fa4b2a95566a6c0e33b"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
