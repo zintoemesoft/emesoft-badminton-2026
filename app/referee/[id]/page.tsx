@@ -126,7 +126,7 @@ export default function LiveScoringPage({ params }: { params: { id: string } }) 
             <div className="relative w-full h-full flex flex-row items-end justify-center pb-10 perspective-2000">
                 
                 {/* Stand Base / Backplate */}
-                <div className="relative bg-[#050505] rounded-t-[3rem] p-8 pb-0 pt-20 w-full h-full flex justify-center gap-4 md:gap-16 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] border-t border-white/10 ring-1 ring-white/5 transform rotateX(10deg) origin-bottom transition-transform duration-500">
+                <div className="relative bg-[#050505] rounded-t-[3rem] p-4 md:p-8 pb-0 pt-20 w-full h-full flex flex-col md:flex-row landscape:flex-row justify-center items-center gap-8 md:gap-16 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.1)] border-t border-white/10 ring-1 ring-white/5 transform md:rotateX(10deg) origin-bottom transition-transform duration-500 overflow-y-auto md:overflow-visible">
                     
                     {/* Metal Hinge Bar (Visual) */}
                     <div className="absolute top-12 left-8 right-8 h-4 bg-gradient-to-b from-gray-700 to-gray-900 rounded-full shadow-inner"></div>
@@ -137,8 +137,8 @@ export default function LiveScoringPage({ params }: { params: { id: string } }) 
                         onClick={() => updateScore(1, 0)}
                     >
                          {/* Name Plate */}
-                        <div className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-t-lg border-t border-x border-white/20 text-center min-w-[200px] mb-4 shadow-lg transform -translate-y-2 group-hover:-translate-y-4 transition-transform">
-                            <h2 className="text-xl md:text-3xl font-bold text-white tracking-wide truncate max-w-[300px]">{team1?.name || "Team 1"}</h2>
+                        <div className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-t-lg border-t border-x border-white/20 text-center min-w-[150px] md:min-w-[200px] mb-2 md:mb-4 shadow-lg transform -translate-y-2 group-hover:-translate-y-4 transition-transform">
+                            <h2 className="text-lg md:text-3xl font-bold text-white tracking-wide truncate max-w-[200px] md:max-w-[300px]">{team1?.name || "Team 1"}</h2>
                         </div>
 
                         {/* Flip Card */}
@@ -161,7 +161,7 @@ export default function LiveScoringPage({ params }: { params: { id: string } }) 
                     </div>
 
                     {/* VS / Divider Area */}
-                     <div className="w-[2px] bg-white/5 h-[60%] self-center rounded-full hidden md:block"></div>
+                     <div className="w-[2px] bg-white/5 h-[60%] self-center rounded-full hidden md:block landscape:block"></div>
 
                     {/* Team 2 Section */}
                    <div 
@@ -169,8 +169,8 @@ export default function LiveScoringPage({ params }: { params: { id: string } }) 
                         onClick={() => updateScore(0, 1)}
                     >
                          {/* Name Plate */}
-                        <div className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-t-lg border-t border-x border-white/20 text-center min-w-[200px] mb-4 shadow-lg transform -translate-y-2 group-hover:-translate-y-4 transition-transform">
-                            <h2 className="text-xl md:text-3xl font-bold text-white tracking-wide truncate max-w-[300px]">{team2?.name || "Team 2"}</h2>
+                        <div className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-t-lg border-t border-x border-white/20 text-center min-w-[150px] md:min-w-[200px] mb-2 md:mb-4 shadow-lg transform -translate-y-2 group-hover:-translate-y-4 transition-transform">
+                            <h2 className="text-lg md:text-3xl font-bold text-white tracking-wide truncate max-w-[200px] md:max-w-[300px]">{team2?.name || "Team 2"}</h2>
                         </div>
 
                         {/* Flip Card */}

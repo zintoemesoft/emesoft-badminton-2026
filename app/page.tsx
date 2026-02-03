@@ -123,8 +123,10 @@ export default function Home() {
                 
                     <h4 className="sub-headline">GIẢI CẦU LÔNG</h4>
                     <h1 className="main-headline">
-                        <span className="text-eme">EME</span>
-                        <span className="text-soft">SOFT</span> 
+                        <span className="whitespace-nowrap inline-block">
+                            <span className="text-eme">EME</span>
+                            <span className="text-soft">SOFT</span> 
+                        </span>
                         <span className="accent-text">2026</span>
                     </h1>
                     <p className="tagline">BỨT PHÁ GIỚI HẠN - CHINH PHỤC ĐỈNH CAO</p>

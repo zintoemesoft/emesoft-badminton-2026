@@ -128,11 +128,11 @@ export default function AdminPage() {
                 <div className="absolute inset-0 bg-white/5 opacity-50"></div>
             </div>
 
-            <div className="relative z-10 container mx-auto px-4 py-6 flex gap-6">
+            <div className="relative z-10 container mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
                 {/* Main Content */}
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                     {/* Header */}
-                    <header className="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                    <header className="flex flex-col md:flex-row justify-between items-center mb-6 border-b border-white/10 pb-4 gap-4">
                         <div className="flex items-center gap-4">
                             <h1 className="text-xl font-bold font-orbitron text-white">ADMIN DASHBOARD</h1>
                             <button onClick={seedDatabase} className="text-xs bg-red-900/30 border border-red-500/50 text-red-400 px-3 py-1.5 rounded hover:bg-red-900/50 transition">
@@ -165,38 +165,57 @@ export default function AdminPage() {
                     </div>
 
                     {/* Group Matches Table */}
-                    <div className="overflow-x-auto bg-[#111] rounded-lg border border-white/10 shadow-xl mb-12">
-                        <table className="w-full text-left text-sm whitespace-nowrap">
-                            <thead className="bg-black/50 text-white/50 font-mono text-xs uppercase border-b border-white/10">
-                                <tr>
-                                    <th className="px-4 py-3 text-center w-12">#</th>
-                                    <th className="px-4 py-3 text-right w-1/4">Team 1</th>
-                                    <th className="px-2 py-3 text-center w-32">Score</th>
-                                    <th className="px-4 py-3 text-left w-1/4">Team 2</th>
-                                    <th className="px-4 py-3 text-center w-32">Status</th>
-                                    <th className="px-4 py-3 text-center w-24">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {filteredMatches.map((match) => (
-                                    <MatchRow 
-                                        key={match.id} 
-                                        match={match} 
-                                        teams={teams}
-                                        team1Name={getTeamName(match.team1Id)} 
-                                        team2Name={getTeamName(match.team2Id)} 
-                                        onUpdate={updateMatch}
-                                        isKnockout={false}
-                                        isSelected={selectedMatchId === match.id}
-                                        onSelect={() => setSelectedMatchId(match.id)}
-                                    />
-                                ))}
-                            </tbody>
-                        </table>
-                        
-                        {filteredMatches.length === 0 && (
-                            <div className="p-10 text-center text-white/30">No matches found in this group.</div>
-                        )}
+                    <div className="mb-12">
+                        {/* Mobile View */}
+                        <div className="md:hidden">
+                            {filteredMatches.map(match => (
+                                <MatchCardMobile
+                                    key={match.id}
+                                    match={match}
+                                    teams={teams}
+                                    team1Name={getTeamName(match.team1Id)}
+                                    team2Name={getTeamName(match.team2Id)}
+                                    onUpdate={updateMatch}
+                                    isKnockout={false}
+                                />
+                            ))}
+                            {filteredMatches.length === 0 && <div className="text-white/30 text-center py-10">No matches found.</div>}
+                        </div>
+
+                        {/* Desktop View */}
+                        <div className="hidden md:block overflow-x-auto bg-[#111] rounded-lg border border-white/10 shadow-xl">
+                            <table className="w-full text-left text-sm whitespace-nowrap">
+                                <thead className="bg-black/50 text-white/50 font-mono text-xs uppercase border-b border-white/10">
+                                    <tr>
+                                        <th className="px-4 py-3 text-center w-12">#</th>
+                                        <th className="px-4 py-3 text-right w-1/4">Team 1</th>
+                                        <th className="px-2 py-3 text-center w-32">Score</th>
+                                        <th className="px-4 py-3 text-left w-1/4">Team 2</th>
+                                        <th className="px-4 py-3 text-center w-32">Status</th>
+                                        <th className="px-4 py-3 text-center w-24">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {filteredMatches.map((match) => (
+                                        <MatchRow 
+                                            key={match.id} 
+                                            match={match} 
+                                            teams={teams}
+                                            team1Name={getTeamName(match.team1Id)} 
+                                            team2Name={getTeamName(match.team2Id)} 
+                                            onUpdate={updateMatch}
+                                            isKnockout={false}
+                                            isSelected={selectedMatchId === match.id}
+                                            onSelect={() => setSelectedMatchId(match.id)}
+                                        />
+                                    ))}
+                                </tbody>
+                            </table>
+                            
+                            {filteredMatches.length === 0 && (
+                                <div className="p-10 text-center text-white/30">No matches found in this group.</div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Knockout Stage Section */}
@@ -211,34 +230,52 @@ export default function AdminPage() {
                         </div>
 
                         {hasKO && (
-                            <div className="overflow-x-auto bg-[#1b1500] rounded-lg border border-yellow-500/20 shadow-xl">
-                                <table className="w-full text-left text-sm whitespace-nowrap">
-                                    <thead className="bg-black/50 text-yellow-500/50 font-mono text-xs uppercase border-b border-yellow-500/10">
-                                        <tr>
-                                            <th className="px-4 py-3 text-center w-32">Stage</th>
-                                            <th className="px-4 py-3 text-right w-1/4">Team 1 (Select)</th>
-                                            <th className="px-2 py-3 text-center w-32">Score</th>
-                                            <th className="px-4 py-3 text-left w-1/4">Team 2 (Select)</th>
-                                            <th className="px-4 py-3 text-center w-32">Status</th>
-                                            <th className="px-4 py-3 text-center w-24">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-yellow-500/10">
-                                        {knockoutMatches.map((match) => (
-                                            <MatchRow 
-                                                key={match.id} 
-                                                match={match} 
-                                                teams={teams}
-                                                team1Name={getTeamName(match.team1Id)} 
-                                                team2Name={getTeamName(match.team2Id)} 
-                                                onUpdate={updateMatch}
-                                                isKnockout={true}
-                                                isSelected={selectedMatchId === match.id}
-                                                onSelect={() => setSelectedMatchId(match.id)}
-                                            />
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <div className="mt-4">
+                                {/* Mobile View */}
+                                <div className="md:hidden">
+                                    {knockoutMatches.map(match => (
+                                        <MatchCardMobile
+                                            key={match.id}
+                                            match={match}
+                                            teams={teams}
+                                            team1Name={getTeamName(match.team1Id)}
+                                            team2Name={getTeamName(match.team2Id)}
+                                            onUpdate={updateMatch}
+                                            isKnockout={true}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Desktop View */}
+                                <div className="hidden md:block overflow-x-auto bg-[#1b1500] rounded-lg border border-yellow-500/20 shadow-xl">
+                                    <table className="w-full text-left text-sm whitespace-nowrap">
+                                        <thead className="bg-black/50 text-yellow-500/50 font-mono text-xs uppercase border-b border-yellow-500/10">
+                                            <tr>
+                                                <th className="px-4 py-3 text-center w-32">Stage</th>
+                                                <th className="px-4 py-3 text-right w-1/4">Team 1 (Select)</th>
+                                                <th className="px-2 py-3 text-center w-32">Score</th>
+                                                <th className="px-4 py-3 text-left w-1/4">Team 2 (Select)</th>
+                                                <th className="px-4 py-3 text-center w-32">Status</th>
+                                                <th className="px-4 py-3 text-center w-24">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-yellow-500/10">
+                                            {knockoutMatches.map((match) => (
+                                                <MatchRow 
+                                                    key={match.id} 
+                                                    match={match} 
+                                                    teams={teams}
+                                                    team1Name={getTeamName(match.team1Id)} 
+                                                    team2Name={getTeamName(match.team2Id)} 
+                                                    onUpdate={updateMatch}
+                                                    isKnockout={true}
+                                                    isSelected={selectedMatchId === match.id}
+                                                    onSelect={() => setSelectedMatchId(match.id)}
+                                                />
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -465,5 +502,178 @@ function MatchRow({ match, teams, team1Name, team2Name, onUpdate, isKnockout, is
                 </tr>
             )}
         </React.Fragment>
+    );
+}
+
+function MatchCardMobile({ match, teams, team1Name, team2Name, onUpdate, isKnockout }: { 
+    match: Match, 
+    teams: Team[], 
+    team1Name: string, 
+    team2Name: string, 
+    onUpdate: (id: string, d: Partial<Match>) => void, 
+    isKnockout: boolean
+}) {
+    const [s1, setS1] = useState(match.score1);
+    const [s2, setS2] = useState(match.score2);
+    const [t1, setT1] = useState(match.team1Id);
+    const [t2, setT2] = useState(match.team2Id);
+    const [hasChanges, setHasChanges] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
+
+    const getTeam = (id: string) => teams.find(t => t.id === id);
+
+    useEffect(() => {
+        setS1(match.score1);
+        setS2(match.score2);
+        setT1(match.team1Id);
+        setT2(match.team2Id);
+        setHasChanges(false);
+    }, [match.score1, match.score2, match.team1Id, match.team2Id]);
+
+    const handleScoreChange = (val1: number, val2: number) => {
+        setS1(val1);
+        setS2(val2);
+        setHasChanges(true); 
+    };
+
+    const handleTeamChange = (team1: string, team2: string) => {
+        setT1(team1);
+        setT2(team2);
+        setHasChanges(true);
+    };
+
+    const saveDetails = () => {
+        onUpdate(match.id, { 
+            score1: Number(s1), 
+            score2: Number(s2),
+            team1Id: t1,
+            team2Id: t2
+        });
+        setHasChanges(false);
+    };
+
+    const isMatchLive = match.status === 'PLAYING';
+    const isLocked = match.status === 'FINISHED';
+    
+    return (
+        <div className={`bg-[#111] border rounded-lg p-4 mb-4 ${
+            isMatchLive ? 'border-red-500/30 bg-red-900/10' : 'border-white/10'
+        }`}>
+            {/* Header: Title + Status */}
+            <div className="flex justify-between items-start mb-4">
+                <div className="text-xs font-mono text-white/50">{match.title || `#${match.order}`}</div>
+                <select 
+                    value={match.status}
+                    onChange={(e) => onUpdate(match.id, { status: e.target.value as any })}
+                    className={`bg-transparent text-xs font-bold border rounded px-2 py-1 ${
+                        match.status === 'PLAYING' ? 'border-red-500 text-red-500' : 
+                        match.status === 'FINISHED' ? 'border-green-500 text-green-500' : 
+                        'border-white/20 text-white/50'
+                    }`}
+                >
+                    <option value="SCHEDULED" className="bg-black">SCH</option>
+                    <option value="PLAYING" className="bg-black">LIVE</option>
+                    <option value="FINISHED" className="bg-black">DONE</option>
+                </select>
+            </div>
+
+            {/* Teams Grid */}
+            <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center mb-4">
+                {/* Team 1 */}
+                <div className="flex flex-col items-center gap-2">
+                     {isKnockout ? (
+                        <select 
+                            value={t1} 
+                            onChange={(e) => handleTeamChange(e.target.value, t2)}
+                            disabled={isLocked}
+                            className="bg-black/40 border border-white/10 rounded px-1 py-1 text-xs text-white w-full max-w-[100px]"
+                        >
+                            <option value="TBD">Select</option>
+                            {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    ) : (
+                        <span className={`text-sm text-center font-bold truncate w-full ${match.score1 > match.score2 && match.status === 'FINISHED' ? 'text-green-400' : 'text-gray-300'}`}>
+                            {team1Name}
+                        </span>
+                    )}
+                    <input 
+                        type="number" 
+                        value={s1}
+                        onChange={(e) => handleScoreChange(Number(e.target.value), s2)}
+                        disabled={isLocked}
+                        className="w-12 h-10 bg-black/40 border border-white/20 rounded text-center font-bold text-lg"
+                    />
+                </div>
+
+                <div className="text-white/20 font-bold">-</div>
+
+                {/* Team 2 */}
+                <div className="flex flex-col items-center gap-2">
+                     {isKnockout ? (
+                        <select 
+                            value={t2} 
+                            onChange={(e) => handleTeamChange(t1, e.target.value)}
+                            disabled={isLocked}
+                            className="bg-black/40 border border-white/10 rounded px-1 py-1 text-xs text-white w-full max-w-[100px]"
+                        >
+                            <option value="TBD">Select</option>
+                            {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                        </select>
+                    ) : (
+                        <span className={`text-sm text-center font-bold truncate w-full ${match.score2 > match.score1 && match.status === 'FINISHED' ? 'text-green-400' : 'text-gray-300'}`}>
+                            {team2Name}
+                        </span>
+                    )}
+                    <input 
+                        type="number" 
+                        value={s2}
+                        onChange={(e) => handleScoreChange(s1, Number(e.target.value))}
+                        disabled={isLocked}
+                        className="w-12 h-10 bg-black/40 border border-white/20 rounded text-center font-bold text-lg"
+                    />
+                </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-between items-center pt-3 border-t border-white/5">
+                <button 
+                    onClick={() => setShowDetails(!showDetails)}
+                    className="text-xs text-white/50 hover:text-white flex items-center gap-1"
+                >
+                    {showDetails ? 'Hide Details' : 'Show Details'}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-3 h-3 transition-transform ${showDetails ? 'rotate-180' : ''}`}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>
+
+                <div className="flex gap-3">
+                    {hasChanges && (
+                        <button onClick={saveDetails} className="bg-yellow-500 text-black text-xs font-bold px-4 py-2 rounded">
+                            SAVE CHANGES
+                        </button>
+                    )}
+                    <Link
+                        href={`/referee/${match.id}`}
+                        className="text-xs bg-white/5 border border-white/10 px-3 py-2 rounded hover:bg-white/10 text-white/50 hover:text-white transition"
+                    >
+                        Open Live Board
+                    </Link>
+                </div>
+            </div>
+
+            {/* Expanded Details */}
+            {showDetails && (
+                <div className="mt-4 pt-4 border-t border-white/5 grid grid-cols-1 gap-4 animate-in fade-in slide-in-from-top-2">
+                    <div>
+                        <div className="text-[10px] uppercase tracking-widest text-[#00e5ff] mb-2 font-bold">Team 1 Details</div>
+                        <TeamDetailsCard team={getTeam(match.team1Id)} teamId={match.team1Id} />
+                    </div>
+                    <div>
+                        <div className="text-[10px] uppercase tracking-widest text-[#ff00cc] mb-2 font-bold">Team 2 Details</div>
+                        <TeamDetailsCard team={getTeam(match.team2Id)} teamId={match.team2Id} />
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
