@@ -12,6 +12,12 @@ const getIcon = (level: number) => {
     return '🐣'; 
 };
 
+const ThumbUpIcon = ({ className, solid }: { className?: string; solid?: boolean }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill={solid ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.5c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V3a.75.75 0 0 1 .75-.75A2.25 2.25 0 0 1 16.5 4.5c0 1.152-.26 2.247-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904M14.25 9h2.25M5.904 18.75c.083.205.176.405.278.602.482.95 1.62 1.587 2.975 1.587h2.97c.22 0 .44-.017.653-.05l-.653.05ZM6.633 10.5H5.904m-2.122 8.718L4.316 19.5" />
+    </svg>
+);
+
 
 type Match = { 
     id: string; 
@@ -138,6 +144,12 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                             : (userVote === 'team1' ? 'bg-white/10' : 'hover:bg-white/5')
                     }`}
                 >
+                    {/* Vote Icon Absolute Position */}
+                    {!isFinished && (
+                         <div className={`absolute right-2 top-2 transition-transform duration-300 ${userVote === 'team1' ? 'scale-110' : 'opacity-0 group-hover:opacity-50 scale-75'}`}>
+                            <ThumbUpIcon solid={userVote === 'team1'} className={`w-5 h-5 ${userVote === 'team1' ? 'text-cyan-400' : 'text-white'}`} />
+                        </div>
+                    )}
                     <div className="flex flex-col items-center w-full z-10 py-2">
                         <span className={`team-name transition-all ${
                             isFinished 
@@ -160,6 +172,13 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                                 ))}
                             </div>
                          )}
+
+                        {/* Centered Vote Action Icon (Visible always but dimmed if not voted) */}
+                        {!isFinished && (
+                             <div className={`mt-2 transition-all duration-300 ${userVote === 'team1' ? 'scale-110 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]' : 'scale-100 opacity-40 group-hover:opacity-100 group-hover:scale-110'}`}>
+                                <ThumbUpIcon solid={userVote === 'team1'} className={`w-6 h-6 ${userVote === 'team1' ? 'text-cyan-400' : 'text-white'}`} />
+                            </div>
+                        )}
 
                         {/* Score Display if Finished */}
                          {isFinished ? (
@@ -192,6 +211,12 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                             : (userVote === 'team2' ? 'bg-white/10' : 'hover:bg-white/5')
                     }`}
                 >
+                     {/* Vote Icon Absolute Position */}
+                     {!isFinished && (
+                         <div className={`absolute right-2 bottom-2 transition-transform duration-300 ${userVote === 'team2' ? 'scale-110' : 'opacity-0 group-hover:opacity-50 scale-75'}`}>
+                            <ThumbUpIcon solid={userVote === 'team2'} className={`w-5 h-5 ${userVote === 'team2' ? 'text-pink-400' : 'text-white'}`} />
+                        </div>
+                    )}
                      <div className="flex flex-col items-center w-full z-10 py-2">
                         <span className={`team-name transition-all ${
                              isFinished 
@@ -215,6 +240,13 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                             </div>
                          )}
 
+                        {/* Centered Vote Action Icon */}
+                         {!isFinished && (
+                             <div className={`mt-2 transition-all duration-300 ${userVote === 'team2' ? 'scale-110 drop-shadow-[0_0_8px_rgba(244,114,182,0.8)]' : 'scale-100 opacity-40 group-hover:opacity-100 group-hover:scale-110'}`}>
+                                <ThumbUpIcon solid={userVote === 'team2'} className={`w-6 h-6 ${userVote === 'team2' ? 'text-pink-400' : 'text-white'}`} />
+                            </div>
+                        )}
+
                          {/* Score Display if Finished */}
                         {isFinished ? (
                              <span className={`text-3xl font-mono font-bold mt-2`} style={isFinished && winner === 'team2' ? { color: neonColor } : { color: 'rgba(255,255,255,0.5)' }}>
@@ -227,15 +259,16 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                      {/* Vote Indicator BG */}
                     {!isFinished && userVote === 'team2' && <div className="absolute inset-0 border border-pink-500/50 rounded-lg box-border"></div>}
                 </button>
-            </div>
-            
+                
             {/* Progress Bar (Hidden if finished) */}
             {!isFinished && totalVotes > 0 && (
-                <div className="absolute bottom-0 left-0 w-full h-1 bg-white/10 flex">
-                    <div className="bg-cyan-500 h-full transition-all duration-500" style={{ width: `${t1Percent}%` }}></div>
-                    <div className="bg-pink-500 h-full transition-all duration-500" style={{ width: `${t2Percent}%` }}></div>
+                <div className="w-full h-2 bg-white/10 flex mt-1">
+                    <div className=" bg-cyan-500 h-full transition-all duration-500" style={{ width: `${t1Percent}%` }}></div>
+                    <div className=" bg-pink-500 h-full transition-all duration-500" style={{ width: `${t2Percent}%` }}></div>
                 </div>
             )}
+            </div>
+            
         </div>
     );
 }

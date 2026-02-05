@@ -202,7 +202,6 @@ export default function Home() {
                 <div className="container">
                     <div className="section-header">
                         <h2 className="section-title premium-title">Vòng Bán Kết</h2>
-                        {!user && <p className="text-center text-white/50 mb-6">Đăng nhập để tham gia dự đoán đội thắng cuộc!</p>}
                     </div>
                     
                     <div className="level-2-container">
@@ -242,6 +241,8 @@ export default function Home() {
                     <div className="section-header">
                         <div className="glory-text">ĐỈNH VINH QUANG</div>
                         <h2 className="section-title title-final premium-title !font-orbitron">Chung Kết</h2>
+                        {!user ? <p className="text-center text-white/50 mb-6">Đăng nhập để tham gia dự đoán đội thắng cuộc!</p>:
+                        <p className="text-center text-white/50 mb-6">Hãy Click vào đội bạn dự đoán thắng cuộc</p>}
                     </div>
 
                     <div className="finals-layout">
