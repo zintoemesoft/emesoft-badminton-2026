@@ -14,8 +14,8 @@ import { HeroLoginButton, UserSessionHeader } from '@/components/AuthButton';
 
 
 // Types
-type Member = { name: string; level: number };
-type Team = { id: string; name: string; members: Member[]; group: string };
+type Member = { name: string; level: number; gender?: 'M' | 'F'; avatar?: string };
+type Team = { id: string; name: string; members: Member[]; group: string; alias?: string };
 type Match = { 
     id: string; 
     group: string; 

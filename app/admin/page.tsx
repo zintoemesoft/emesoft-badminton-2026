@@ -5,6 +5,7 @@ import { db, seedDatabase } from '@/firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import BestMomentsManager from '@/components/admin/BestMomentsManager';
+import TeamManager from '@/components/admin/TeamManager';
 
 type Match = { 
     id: string; 
@@ -18,8 +19,8 @@ type Match = {
     title?: string; // e.g. "Semi Final 1"
 };
 
-type Member = { name: string; level: number };
-type Team = { id: string; name: string; members?: Member[] };
+type Member = { name: string; level: number; gender?: 'M' | 'F'; avatar?: string; };
+type Team = { id: string; name: string; alias?: string; group?: string; members?: Member[] };
 
 export default function AdminPage() {
     const [matches, setMatches] = useState<Match[]>([]);
@@ -28,7 +29,7 @@ export default function AdminPage() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(true);
     const [teams, setTeams] = useState<Team[]>([]);
-    const [activeTab, setActiveTab] = useState<'A' | 'B'>('A');
+    const [activeTab, setActiveTab] = useState<'A' | 'B' | 'TEAMS'>('A');
 
     // Auth Check
     const checkPassword = () => {
@@ -150,23 +151,26 @@ export default function AdminPage() {
                         </div>
                     </header>
 
-                    {/* Main Filter */}
                     <div className="flex gap-4 mb-4">
-                        {['A', 'B'].map(group => (
+                        {['A', 'B', 'TEAMS'].map(tab => (
                             <button
-                                key={group}
-                                onClick={() => setActiveTab(group as 'A' | 'B')}
-                                className={`px-4 py-2 rounded text-sm font-bold border ${activeTab === group 
-                                    ? (group === 'A' ? 'bg-cyan-900/30 border-cyan-500 text-cyan-400' : 'bg-lime-900/30 border-lime-500 text-lime-400') 
+                                key={tab}
+                                onClick={() => setActiveTab(tab as any)}
+                                className={`px-4 py-2 rounded text-sm font-bold border ${activeTab === tab 
+                                    ? (tab === 'A' ? 'bg-cyan-900/30 border-cyan-500 text-cyan-400' : 
+                                       tab === 'B' ? 'bg-lime-900/30 border-lime-500 text-lime-400' :
+                                       'bg-purple-900/30 border-purple-500 text-purple-400') 
                                     : 'bg-black/40 border-white/10 text-white/40 hover:text-white'}`}
                             >
-                                Table {group} Matches
+                                {tab === 'TEAMS' ? 'Manage Teams' : `Table ${tab} Matches`}
                             </button>
                         ))}
                     </div>
 
-                    {/* Group Matches Table */}
-                    <div className="mb-12">
+                    {activeTab === 'TEAMS' ? (
+                        <TeamManager teams={teams} />
+                    ) : (
+                        <div className="mb-12">
                         {/* Mobile View */}
                         <div className="md:hidden">
                             {filteredMatches.map(match => (
@@ -217,7 +221,8 @@ export default function AdminPage() {
                                 <div className="p-10 text-center text-white/30">No matches found in this group.</div>
                             )}
                         </div>
-                    </div>
+                        </div>
+                    )}
 
                     {/* Knockout Stage Section */}
                     <div className="border-t border-white/10 pt-8">
@@ -302,8 +307,17 @@ function TeamDetailsCard({ team, teamId }: { team?: Team, teamId: string }) {
                 <div className="text-xs text-white/50 mb-2">Members:</div>
                 <div className="space-y-1">
                     {team.members?.map((m, i) => (
-                         <div key={i} className="flex justify-between items-center text-sm">
-                            <span>{m.name}</span>
+                         <div key={i} className="flex justify-between items-center text-sm gap-2">
+                             <div className="flex items-center gap-2">
+                                 {m.avatar ? (
+                                    <img src={m.avatar} alt={m.name} className="w-5 h-5 rounded-full object-cover border border-white/10" />
+                                 ) : (
+                                     <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] border border-white/10 ${m.gender === 'F' ? 'bg-pink-900/20 text-pink-400' : 'bg-blue-900/20 text-blue-400'}`}>
+                                         {m.gender === 'F' ? 'F' : 'M'}
+                                     </div>
+                                 )}
+                                 <span>{m.name}</span>
+                             </div>
                             <span className="text-white/30 text-xs">Lvl {m.level}</span>
                         </div>
                     )) || <div className="text-white/30 text-xs italic">No members listed</div>}
