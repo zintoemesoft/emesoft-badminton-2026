@@ -5,6 +5,14 @@ import { db } from "@/firebase";
 import { doc, getDoc, setDoc, onSnapshot, collection, query, where, serverTimestamp } from "firebase/firestore";
 import { User } from "firebase/auth";
 
+// Helpers
+const getIcon = (level: number) => {
+    if (level === 3) return '💪'; 
+    if (level === 2) return '⚖️'; 
+    return '🐣'; 
+};
+
+
 type Match = { 
     id: string; 
     group: string; 
@@ -19,7 +27,7 @@ type Match = {
     placeholder2?: string;
 };
 
-type Team = { id: string; name: string; };
+type Team = { id: string; name: string; members?: { name: string; level: number }[] };
 
 interface KnockoutBettingProps {
     match: Match;
@@ -100,6 +108,13 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
     const isFinished = match.status === 'FINISHED';
     const winner = match.score1 > match.score2 ? 'team1' : match.score1 < match.score2 ? 'team2' : null;
 
+    // Dynamic Neon Color
+    let neonColor = '#ff00de'; // Default pink
+    if (className.includes('style-cyan')) neonColor = '#00d2ff';
+    if (className.includes('style-lime')) neonColor = '#ccff00';
+    if (isFinal || className.includes('glowing-border-gold')) neonColor = '#ffd700';
+    if (className.includes('match-level-bronze') || match.id.includes('bronze')) neonColor = '#cd7f32';
+
     return (
         <div className={`match-card relative ${className}`} data-id={match.id}>
             {/* Finals Crown or Winner Badge */}
@@ -114,26 +129,41 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                 {/* Team 1 (Top) */}
                 <button 
                     onClick={() => handleVote('team1')}
-                    disabled={!user || loading || isFinished}
+                    style={isFinished && winner === 'team1' ? ({ '--neon-color': neonColor } as React.CSSProperties) : {}}
                     className={`team-slot top w-full relative transition-all duration-300 group ${
                         isFinished 
                             ? (winner === 'team1' 
-                                ? 'bg-gradient-to-r from-yellow-500/20 to-transparent border-l-4 border-[#ffdd00] opacity-100 scale-105 z-10 shadow-[0_0_30px_rgba(255,221,0,0.1)]' 
+                                ? 'bg-gradient-to-r from-yellow-500/20 to-transparent border-l-4 opacity-100 scale-105 z-10 neon-border-animate' 
                                 : 'opacity-30 blur-[1px] grayscale')
                             : (userVote === 'team1' ? 'bg-white/10' : 'hover:bg-white/5')
                     }`}
                 >
-                    <div className="flex flex-col items-center w-full z-10">
+                    <div className="flex flex-col items-center w-full z-10 py-2">
                         <span className={`team-name transition-all ${
                             isFinished 
-                                ? (winner === 'team1' ? 'text-[#ffdd00] font-black text-2xl drop-shadow-md' : 'text-white')
+                                ? (winner === 'team1' ? `font-black text-2xl drop-shadow-md` : 'text-white')
                                 : (userVote === 'team1' ? 'text-cyan-400' : '')
-                        }`}>
+                        }`}
+                        style={isFinished && winner === 'team1' ? { color: neonColor } : {}}
+                        >
                             {team1Name}
                         </span>
+                        
+                         {/* Members List */}
+                         {team1 && team1.members && (
+                            <div className="flex flex-wrap justify-center gap-2 mt-2 px-2">
+                                {team1.members.map((m: any, i: number) => (
+                                    <span key={i} className="flex items-center gap-1 text-[11px] bg-white/5 border border-white/10 px-2 py-1 rounded-full text-white/80 whitespace-nowrap">
+                                        <span>{getIcon(m.level)}</span>
+                                        {m.name}
+                                    </span>
+                                ))}
+                            </div>
+                         )}
+
                         {/* Score Display if Finished */}
                          {isFinished ? (
-                             <span className={`text-3xl font-mono font-bold mt-2 ${winner === 'team1' ? 'text-[#ffdd00]' : 'text-white/50'}`}>
+                             <span className={`text-3xl font-mono font-bold mt-2`} style={isFinished && winner === 'team1' ? { color: neonColor } : { color: 'rgba(255,255,255,0.5)' }}>
                                  {match.score1}
                              </span>
                          ) : (
@@ -153,25 +183,41 @@ export default function KnockoutBetting({ match, team1, team2, user, className =
                 <button 
                     onClick={() => handleVote('team2')}
                     disabled={!user || loading || isFinished}
+                    style={isFinished && winner === 'team2' ? ({ '--neon-color': neonColor } as React.CSSProperties) : {}}
                     className={`team-slot bottom w-full relative transition-all duration-300 group ${
                          isFinished 
                             ? (winner === 'team2' 
-                                ? 'bg-gradient-to-r from-yellow-500/20 to-transparent border-l-4 border-[#ffdd00] opacity-100 scale-105 z-10 shadow-[0_0_30px_rgba(255,221,0,0.1)]' 
+                                ? 'bg-gradient-to-r from-yellow-500/20 to-transparent border-l-4 opacity-100 scale-105 z-10 neon-border-animate' 
                                 : 'opacity-30 blur-[1px] grayscale')
                             : (userVote === 'team2' ? 'bg-white/10' : 'hover:bg-white/5')
                     }`}
                 >
-                     <div className="flex flex-col items-center w-full z-10">
+                     <div className="flex flex-col items-center w-full z-10 py-2">
                         <span className={`team-name transition-all ${
                              isFinished 
-                                ? (winner === 'team2' ? 'text-[#ffdd00] font-black text-2xl drop-shadow-md' : 'text-white')
+                                ? (winner === 'team2' ? `font-black text-2xl drop-shadow-md` : 'text-white')
                                 : (userVote === 'team2' ? 'text-pink-400' : '')
-                        }`}>
+                        }`}
+                        style={isFinished && winner === 'team2' ? { color: neonColor } : {}}
+                        >
                              {team2Name}
                         </span>
+
+                        {/* Members List */}
+                         {team2 && team2.members && (
+                            <div className="flex flex-wrap justify-center gap-2 mt-2 px-2">
+                                {team2.members.map((m: any, i: number) => (
+                                    <span key={i} className="flex items-center gap-1 text-[11px] bg-white/5 border border-white/10 px-2 py-1 rounded-full text-white/80 whitespace-nowrap">
+                                        <span>{getIcon(m.level)}</span>
+                                        {m.name}
+                                    </span>
+                                ))}
+                            </div>
+                         )}
+
                          {/* Score Display if Finished */}
                         {isFinished ? (
-                             <span className={`text-3xl font-mono font-bold mt-2 ${winner === 'team2' ? 'text-[#ffdd00]' : 'text-white/50'}`}>
+                             <span className={`text-3xl font-mono font-bold mt-2`} style={isFinished && winner === 'team2' ? { color: neonColor } : { color: 'rgba(255,255,255,0.5)' }}>
                                  {match.score2}
                              </span>
                          ) : (

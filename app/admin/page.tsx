@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { db, seedDatabase } from '@/firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
+import BestMomentsManager from '@/components/admin/BestMomentsManager';
 
 type Match = { 
     id: string; 
@@ -278,6 +279,11 @@ export default function AdminPage() {
                                 </div>
                             </div>
                         )}
+                        </div>
+
+                     {/* Best Moments Management */}
+                    <div className="border-t border-white/10 pt-8 mt-8">
+                         <BestMomentsManager />
                     </div>
                 </div>
 

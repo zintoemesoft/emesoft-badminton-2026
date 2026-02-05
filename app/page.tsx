@@ -7,7 +7,11 @@ import { onAuthStateChanged, User } from 'firebase/auth';
 import TeamList from '@/components/TeamList';
 import MatchCard from '@/components/MatchCard';
 import KnockoutBetting from '@/components/KnockoutBetting';
+import BestMoments from '@/components/BestMoments';
 import { HeroLoginButton, UserSessionHeader } from '@/components/AuthButton';
+
+
+
 
 // Types
 type Member = { name: string; level: number };
@@ -103,7 +107,7 @@ export default function Home() {
     const matchSemi1 = matches.find(m => m.id === 'semi1');
     const matchSemi2 = matches.find(m => m.id === 'semi2');
     const matchFinal = matches.find(m => m.id === 'final');
-    const matchThird = matches.find(m => m.id === 'third');
+    const matchThird = matches.find(m => m.id === 'bronze');
 
     return (
         <main className="main-content">
@@ -130,9 +134,14 @@ export default function Home() {
                         <span className="accent-text">2026</span>
                     </h1>
                     <p className="tagline">BỨT PHÁ GIỚI HẠN - CHINH PHỤC ĐỈNH CAO</p>
-                    <div className="hero-actions flex flex-col items-center gap-4">
-                        <button onClick={() => scrollToSection('schedule')} className="btn btn-primary">Xem Lịch Thi Đấu</button>
-                        <HeroLoginButton user={user} />
+                    <div className="hero-actions flex flex-wrap justify-center gap-4 animate-fade-in-up delay-300">
+                        <button onClick={() => scrollToSection('schedule')} className="btn btn-primary min-w-[140px]">Vòng Bảng</button>
+                        <button onClick={() => scrollToSection('semi-finals')} className="btn btn-outline min-w-[140px]">Bán Kết</button>
+                        <button onClick={() => scrollToSection('finals')} className="btn btn-outline min-w-[140px] border-yellow-500 text-yellow-400 hover:bg-yellow-500/10">Chung Kết</button>
+                        <button onClick={() => scrollToSection('best-moments')} className="btn btn-ghost text-cyan-400 hover:text-cyan-300">Khoảnh Khắc</button>
+                        <div className="w-full flex justify-center mt-2">
+                             <HeroLoginButton user={user} />
+                        </div>
                     </div>
                 </div>
             </header>
@@ -199,7 +208,7 @@ export default function Home() {
                     <div className="level-2-container">
                         {matchSemi1 ? (
                             <KnockoutBetting 
-                                match={matchSemi1} 
+                                match={{ ...matchSemi1, label: "Bán Kết 1" }} 
                                 team1={getTeam(matchSemi1.team1Id)} 
                                 team2={getTeam(matchSemi1.team2Id)} 
                                 user={user}
@@ -213,7 +222,7 @@ export default function Home() {
 
                         {matchSemi2 ? (
                             <KnockoutBetting 
-                                match={matchSemi2} 
+                                match={{ ...matchSemi2, label: "Bán Kết 2" }} 
                                 team1={getTeam(matchSemi2.team1Id)} 
                                 team2={getTeam(matchSemi2.team2Id)} 
                                 user={user}
@@ -232,13 +241,13 @@ export default function Home() {
                 <div className="container">
                     <div className="section-header">
                         <div className="glory-text">ĐỈNH VINH QUANG</div>
-                        <h2 className="section-title title-final premium-title">Chung Kết</h2>
+                        <h2 className="section-title title-final premium-title !font-orbitron">Chung Kết</h2>
                     </div>
 
                     <div className="finals-layout">
                          {matchFinal && (
                             <KnockoutBetting 
-                                match={matchFinal} 
+                                match={{ ...matchFinal, label: "Chung Kết" }} 
                                 team1={getTeam(matchFinal.team1Id)} 
                                 team2={getTeam(matchFinal.team2Id)} 
                                 user={user}
@@ -248,7 +257,7 @@ export default function Home() {
 
                          {matchThird && (
                             <KnockoutBetting 
-                                match={matchThird} 
+                                match={{ ...matchThird, label: "Tranh Hạng 3" }} 
                                 team1={getTeam(matchThird.team1Id)} 
                                 team2={getTeam(matchThird.team2Id)} 
                                 user={user}
@@ -258,6 +267,9 @@ export default function Home() {
                     </div>
                 </div>
             </section>
+
+            {/* Best Moments Section */}
+            <BestMoments />
 
             <footer className="footer">
                 <div className="container">

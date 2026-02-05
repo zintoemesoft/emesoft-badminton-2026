@@ -16,6 +16,37 @@
     --font-body: 'Quicksand', sans-serif;
 }
 
+/* Existing animations... */
+
+@keyframes neon-border-pulse {
+  0% {
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--neon-color, #ff00de), 0 0 30px var(--neon-color, #ff00de), 0 0 40px var(--neon-color, #ff00de);
+    border-color: var(--neon-color, #ff00de);
+  }
+  50% {
+    box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px var(--neon-color, #ff00de), 0 0 15px var(--neon-color, #ff00de), 0 0 20px var(--neon-color, #ff00de);
+    border-color: var(--neon-color, #ff00de);
+  }
+  100% {
+    box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--neon-color, #ff00de), 0 0 30px var(--neon-color, #ff00de), 0 0 40px var(--neon-color, #ff00de);
+    border-color: var(--neon-color, #ff00de);
+  }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+  width: max-content;
+}
+
+.neon-border-animate {
+  animation: neon-border-pulse 1.5s infinite alternate;
+}
+
 /* FLIP BOARD UTILS */
 .flip-card {
     background: linear-gradient(to bottom, #252525 50%, #1e1e1e 50%);
