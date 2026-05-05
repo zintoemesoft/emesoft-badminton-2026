@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { db, seedDatabase } from '@/firebase';
+import { db, seedDatabase, seedGiaiCoHoi } from '@/firebase';
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, setDoc } from 'firebase/firestore';
 import Link from 'next/link';
 import BestMomentsManager from '@/components/admin/BestMomentsManager';
@@ -21,6 +21,19 @@ type Match = {
 
 type Member = { name: string; level: number; gender?: 'M' | 'F'; avatar?: string; };
 type Team = { id: string; name: string; alias?: string; group?: string; members?: Member[] };
+type GCHMatch = {
+    id: string;
+    matchNumber: number;
+    bracket: 'winners' | 'losers' | 'grand_final';
+    round: string;
+    roundLabel: string;
+    player1: string;
+    player2: string;
+    score1: number | null;
+    score2: number | null;
+    status: 'SCHEDULED' | 'PLAYING' | 'FINISHED';
+    order: number;
+};
 
 export default function AdminPage() {
     const [matches, setMatches] = useState<Match[]>([]);
@@ -29,7 +42,8 @@ export default function AdminPage() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(true);
     const [teams, setTeams] = useState<Team[]>([]);
-    const [activeTab, setActiveTab] = useState<'A' | 'B' | 'TEAMS'>('A');
+    const [activeTab, setActiveTab] = useState<'A' | 'B' | 'TEAMS' | 'GCH'>('A');
+    const [gchMatches, setGchMatches] = useState<GCHMatch[]>([]);
 
     // Auth Check
     const checkPassword = () => {
@@ -60,7 +74,14 @@ export default function AdminPage() {
             setTeams(t);
         });
 
-        return () => { unsubMatches(); unsubTeams(); };
+        // Listen to Giải Cơ Hội matches
+        const unsubGCH = onSnapshot(query(collection(db, "giai_co_hoi_matches"), orderBy("order", "asc")), (snap) => {
+            const g: GCHMatch[] = [];
+            snap.forEach(d => g.push(d.data() as GCHMatch));
+            setGchMatches(g);
+        });
+
+        return () => { unsubMatches(); unsubTeams(); unsubGCH(); };
     }, []);
 
     const getTeam = (id: string) => teams.find(t => t.id === id);
@@ -72,6 +93,15 @@ export default function AdminPage() {
             await updateDoc(ref, updates);
         } catch (error) {
             console.error("Update failed", error);
+        }
+    };
+
+    const updateGchMatch = async (matchId: string, updates: Partial<GCHMatch>) => {
+        try {
+            const ref = doc(db, "giai_co_hoi_matches", matchId);
+            await updateDoc(ref, updates as Record<string, unknown>);
+        } catch (error) {
+            console.error("GCH Update failed", error);
         }
     };
 
@@ -151,24 +181,75 @@ export default function AdminPage() {
                         </div>
                     </header>
 
-                    <div className="flex gap-4 mb-4">
-                        {['A', 'B', 'TEAMS'].map(tab => (
+                    <div className="flex gap-2 mb-4 flex-wrap">
+                        {['A', 'B', 'GCH', 'TEAMS'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab as any)}
                                 className={`px-4 py-2 rounded text-sm font-bold border ${activeTab === tab 
                                     ? (tab === 'A' ? 'bg-cyan-900/30 border-cyan-500 text-cyan-400' : 
                                        tab === 'B' ? 'bg-lime-900/30 border-lime-500 text-lime-400' :
+                                       tab === 'GCH' ? 'bg-yellow-900/30 border-yellow-500 text-yellow-400' :
                                        'bg-purple-900/30 border-purple-500 text-purple-400') 
                                     : 'bg-black/40 border-white/10 text-white/40 hover:text-white'}`}
                             >
-                                {tab === 'TEAMS' ? 'Manage Teams' : `Table ${tab} Matches`}
+                                {tab === 'TEAMS' ? 'Manage Teams' : tab === 'GCH' ? '🏸 Giải Cơ Hội' : `Table ${tab} Matches`}
                             </button>
                         ))}
                     </div>
 
                     {activeTab === 'TEAMS' ? (
                         <TeamManager teams={teams} />
+                    ) : activeTab === 'GCH' ? (
+                        <div className="mb-12">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-yellow-400 font-bold text-lg">🏸 Giải Cơ Hội — Double Elimination</h2>
+                                <button onClick={async () => { if (confirm('Seed Giải Cơ Hội 10 matches?')) await seedGiaiCoHoi(); }}
+                                    className="text-xs bg-yellow-900/30 border border-yellow-500/50 text-yellow-400 px-3 py-1.5 rounded hover:bg-yellow-900/50 transition">
+                                    ⚡ Init GCH
+                                </button>
+                            </div>
+                            {gchMatches.length === 0 && <div className="text-white/30 text-center py-10">Chưa có dữ liệu. Bấm &ldquo;Init GCH&rdquo; để khởi tạo.</div>}
+                            <div className="flex flex-col gap-3">
+                                {gchMatches.map(m => (
+                                    <div key={m.id} className="rounded-lg border p-4 flex flex-col md:flex-row gap-3 items-center"
+                                        style={{ background: m.bracket === 'grand_final' ? 'rgba(201,162,39,0.07)' : m.bracket === 'winners' ? 'rgba(30,107,184,0.07)' : 'rgba(139,26,26,0.07)',
+                                                 borderColor: m.bracket === 'grand_final' ? 'rgba(255,215,0,0.3)' : m.bracket === 'winners' ? 'rgba(30,107,184,0.3)' : 'rgba(192,57,43,0.3)' }}>
+                                        <div className="flex-shrink-0 w-24 text-center">
+                                            <div className="text-xs font-bold font-mono" style={{ color: m.bracket === 'grand_final' ? '#FFD700' : m.bracket === 'winners' ? '#3a9bd5' : '#e74c3c' }}>
+                                                Trận {m.matchNumber}
+                                            </div>
+                                            <div className="text-[10px] text-white/30 mt-0.5">{m.bracket === 'grand_final' ? 'Grand Final' : m.bracket === 'winners' ? 'Nánh Thắng' : 'Nánh Thua'}</div>
+                                        </div>
+                                        <div className="flex-1 grid grid-cols-5 gap-2 items-center text-sm">
+                                            <input className="col-span-2 bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-xs"
+                                                value={m.player1}
+                                                onChange={e => updateGchMatch(m.id, { player1: e.target.value })} />
+                                            <div className="flex gap-1 items-center justify-center col-span-1">
+                                                <input type="number" min={0} max={99} className="w-10 bg-white/5 border border-white/10 rounded px-1 py-1 text-white text-center text-xs"
+                                                    value={m.score1 ?? ''}
+                                                    onChange={e => updateGchMatch(m.id, { score1: e.target.value === '' ? null : parseInt(e.target.value) })} />
+                                                <span className="text-white/30 text-xs">-</span>
+                                                <input type="number" min={0} max={99} className="w-10 bg-white/5 border border-white/10 rounded px-1 py-1 text-white text-center text-xs"
+                                                    value={m.score2 ?? ''}
+                                                    onChange={e => updateGchMatch(m.id, { score2: e.target.value === '' ? null : parseInt(e.target.value) })} />
+                                            </div>
+                                            <input className="col-span-2 bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-xs"
+                                                value={m.player2}
+                                                onChange={e => updateGchMatch(m.id, { player2: e.target.value })} />
+                                        </div>
+                                        <select
+                                            value={m.status}
+                                            onChange={e => updateGchMatch(m.id, { status: e.target.value as GCHMatch['status'] })}
+                                            className="text-xs bg-black border border-white/20 text-white rounded px-2 py-1.5">
+                                            <option value="SCHEDULED">SCHEDULED</option>
+                                            <option value="PLAYING">PLAYING</option>
+                                            <option value="FINISHED">FINISHED</option>
+                                        </select>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     ) : (
                         <div className="mb-12">
                         {/* Mobile View */}
@@ -227,7 +308,7 @@ export default function AdminPage() {
                     {/* Knockout Stage Section */}
                     <div className="border-t border-white/10 pt-8">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold font-orbitron text-yellow-500">🏆 Knockout Stage Setup</h2>
+                            <h2 className="text-xl font-bold font-quicksand text-yellow-500">🏆 Knockout Stage Setup</h2>
                             {!hasKO && (
                                  <button onClick={seedKnockout} className="bg-yellow-600/20 border border-yellow-500/50 text-yellow-500 text-xs px-3 py-1.5 rounded hover:bg-yellow-600/40 transition">
                                     Initialize Bracket

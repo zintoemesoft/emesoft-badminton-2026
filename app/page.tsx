@@ -9,6 +9,7 @@ import MatchCard from '@/components/MatchCard';
 import KnockoutBetting from '@/components/KnockoutBetting';
 import BestMoments from '@/components/BestMoments';
 import { HeroLoginButton, UserSessionHeader } from '@/components/AuthButton';
+import GiaiCoHoiBanner from '@/components/GiaiCoHoiBanner';
 
 
 
@@ -135,7 +136,8 @@ export default function Home() {
                     </h1>
                     <p className="tagline">BỨT PHÁ GIỚI HẠN - CHINH PHỤC ĐỈNH CAO</p>
                     <div className="hero-actions flex flex-wrap justify-center gap-4 animate-fade-in-up delay-300">
-                        <button onClick={() => scrollToSection('schedule')} className="btn btn-primary min-w-[140px]">Vòng Bảng</button>
+                        <button onClick={() => scrollToSection('giai-co-hoi')} className="btn btn-primary min-w-[160px]" style={{ background: 'linear-gradient(135deg,#C9A227,#FFD700)', color: '#000', fontWeight: 900 }}>🏸 Giải Cơ Hội</button>
+                        <button onClick={() => scrollToSection('schedule')} className="btn btn-outline min-w-[140px]">Vòng Bảng</button>
                         <button onClick={() => scrollToSection('semi-finals')} className="btn btn-outline min-w-[140px]">Bán Kết</button>
                         <button onClick={() => scrollToSection('finals')} className="btn btn-outline min-w-[140px] border-yellow-500 text-yellow-400 hover:bg-yellow-500/10">Chung Kết</button>
                         <button onClick={() => scrollToSection('best-moments')} className="btn btn-ghost text-cyan-400 hover:text-cyan-300">Khoảnh Khắc</button>
@@ -145,6 +147,11 @@ export default function Home() {
                     </div>
                 </div>
             </header>
+
+            {/* ── Giải Cơ Hội Banner ── */}
+            <div id="giai-co-hoi">
+                <GiaiCoHoiBanner />
+            </div>
 
             {/* Teams Section */}
             <TeamList teams={teams} />
@@ -240,7 +247,7 @@ export default function Home() {
                 <div className="container">
                     <div className="section-header">
                         <div className="glory-text">ĐỈNH VINH QUANG</div>
-                        <h2 className="section-title title-final premium-title !font-orbitron">Chung Kết</h2>
+                        <h2 className="section-title title-final premium-title">Chung Kết</h2>
                         {!user ? <p className="text-center text-white/50 mb-6">Đăng nhập để tham gia dự đoán đội thắng cuộc!</p>:
                         <p className="text-center text-white/50 mb-6">Hãy Click vào đội bạn dự đoán thắng cuộc</p>}
                     </div>

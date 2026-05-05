@@ -80,3 +80,35 @@ export const seedDatabase = async () => {
   console.log("Database seeded successfully!");
 };
 
+/**
+ * Seed Giải Cơ Hội 2026 — Double Elimination (10 matches)
+ * Collection: giai_co_hoi_matches
+ */
+export const seedGiaiCoHoi = async () => {
+  const batch = writeBatch(db);
+
+  const matches = [
+    // === NHÁNH THẮNG (Winners Bracket) ===
+    { id: "gch_1", matchNumber: 1, bracket: "winners", round: "vong1_nt", roundLabel: "Vòng 1 Nhánh Thắng (Trận 1 & 2)", player1: "Nhật & Thùy", player2: "Kiệt & Đức", score1: null, score2: null, status: "SCHEDULED", order: 1 },
+    { id: "gch_2", matchNumber: 2, bracket: "winners", round: "vong1_nt", roundLabel: "Vòng 1 Nhánh Thắng (Trận 1 & 2)", player1: "Hưng & Minh", player2: "Hiếu & Lệ", score1: null, score2: null, status: "SCHEDULED", order: 2 },
+    { id: "gch_3", matchNumber: 3, bracket: "winners", round: "banket_nt", roundLabel: "Bán Kết Nhánh Thắng (Trận 3 & 4)", player1: "Bảo & Giang", player2: "Thắng Trận 1", score1: null, score2: null, status: "SCHEDULED", order: 3 },
+    { id: "gch_4", matchNumber: 4, bracket: "winners", round: "banket_nt", roundLabel: "Bán Kết Nhánh Thắng (Trận 3 & 4)", player1: "Phúc & Chiến", player2: "Thắng Trận 2", score1: null, score2: null, status: "SCHEDULED", order: 4 },
+    { id: "gch_5", matchNumber: 5, bracket: "winners", round: "chungket_nt", roundLabel: "Chung Kết Nhánh Thắng (Trận 5)", player1: "Thắng Trận 3", player2: "Thắng Trận 4", score1: null, score2: null, status: "SCHEDULED", order: 5 },
+    // === NHÁNH THUA (Losers Bracket) ===
+    { id: "gch_6", matchNumber: 6, bracket: "losers", round: "vong1_nthua", roundLabel: "Vòng 1 Nhánh Thua (Trận 6 & 7)", player1: "Thua Trận 1", player2: "Thua Trận 4", score1: null, score2: null, status: "SCHEDULED", order: 6 },
+    { id: "gch_7", matchNumber: 7, bracket: "losers", round: "vong1_nthua", roundLabel: "Vòng 1 Nhánh Thua (Trận 6 & 7)", player1: "Thua Trận 2", player2: "Thua Trận 3", score1: null, score2: null, status: "SCHEDULED", order: 7 },
+    { id: "gch_8", matchNumber: 8, bracket: "losers", round: "banket_nthua", roundLabel: "Bán Kết Nhánh Thua (Trận 8)", player1: "Thắng Trận 6", player2: "Thắng Trận 7", score1: null, score2: null, status: "SCHEDULED", order: 8 },
+    { id: "gch_9", matchNumber: 9, bracket: "losers", round: "chungket_nthua", roundLabel: "Chung Kết Nhánh Thua (Trận 9)", player1: "Thắng Trận 8", player2: "Thua Trận 5", score1: null, score2: null, status: "SCHEDULED", order: 9 },
+    // === GRAND FINAL ===
+    { id: "gch_10", matchNumber: 10, bracket: "grand_final", round: "grand_final", roundLabel: "Chung Kết Tổng (Trận 10)", player1: "Thắng Trận 5", player2: "Thắng Trận 9", score1: null, score2: null, status: "SCHEDULED", order: 10 },
+  ];
+
+  matches.forEach((m) => {
+    const ref = doc(db, "giai_co_hoi_matches", m.id);
+    batch.set(ref, m);
+  });
+
+  await batch.commit();
+  console.log("✅ Giải Cơ Hội 2026 matches seeded!");
+};
+
